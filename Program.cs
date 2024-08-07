@@ -4,67 +4,50 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BaiToanBalo
+namespace java
 {
-   
-    public class Knapsack
+
+    public class KnapsackProblem
     {
-        public static int[] KnapsackProblem(int[] size, int[] val, int M, int N)
+        public static int Solve(int[] w, int[] v, int S)
         {
-            int[] cost = new int[M + 1];
-            int[] best = new int[M + 1]; // Lưu trữ chỉ số của vật phẩm được chọn cho mỗi dung lượng
+            int n = w.Length;
+            int[,] dp = new int[n + 1, S + 1];
 
-            // Khởi tạo mảng cost
-            for (int i = 0; i <= M; i++)
-            {
-                cost[i] = 0;
-            }
+            // Khởi tạo
+            for (int j = 0; j <= S; j++)
+                dp[0, j] = 0;
 
-            // Điền vào bảng cost
-            for (int j = 1; j <= N; j++)
+            // Điền bảng dp
+            for (int i = 1; i <= n; i++)
             {
-                for (int i = 1; i <= M; i++)
+                for (int j = 0; j <= S; j++)
                 {
-                    if (i - size[j - 1] >= 0)
-                    {
-                        if (cost[i] < cost[i - size[j - 1]] + val[j - 1])
-                        {
-                            cost[i] = cost[i - size[j - 1]] + val[j - 1];
-                            best[i] = j; // Lưu trữ chỉ số của vật phẩm được chọn cho dung lượng i
-                        }
-                    }
+                    if (w[i - 1] <= j)
+                        dp[i, j] = Math.Max(dp[i - 1, j], dp[i - 1, j - w[i - 1]] + v[i - 1]);
+                    else
+                        dp[i, j] = dp[i - 1, j];
                 }
             }
 
-            return best; // Trả về mảng chỉ ra các vật phẩm được chọn cho mỗi dung lượng
+            // In ra bảng dp
+            for (int i = 0; i <= n; i++)
+            {
+                for (int j = 0; j <= S; j++)
+                    Console.Write(dp[i, j] + " ");
+                Console.WriteLine();
+            }
+
+            return dp[n, S];
         }
 
-        public static void Main()
+        static void Main(string[] args)
         {
-            // Ví dụ sử dụng:
-            int[] size = { 2, 3, 4 };
-            int[] val = { 3, 4, 5 };
-            int M = 5; // Dung lượng của cái ba lô
-            int N = size.Length;
-
-            int[] bestItems = KnapsackProblem(size, val, M, N);
-
-            // Tính giá trị tối đa
-            int maxValue = 0;
-            int numItems = 0;
-            for (int i = 1; i <= M; i++)
-            {
-                if (bestItems[i] > 0)
-                {
-                    maxValue += val[bestItems[i] - 1];
-                    numItems++;
-                }
-            }
-
-            Console.WriteLine("Gia tri toi đa: "+maxValue);
-            Console.WriteLine("So luong mon đo: "+numItems);
-
-          
+            int[] w = { 2, 3, 4, 5 };
+            int[] v = { 3, 4, 5, 6 };
+            int S = 8;
+            int maxValue = Solve(w, v, S);
+            Console.WriteLine("Maximum value: " + maxValue);
             Console.ReadLine();
         }
     }
